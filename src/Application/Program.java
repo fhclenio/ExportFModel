@@ -19,13 +19,8 @@ public class Program {
 		System.out.print("Type the directory of the json files: ");
 		String pathIn = sc.nextLine();
 		
+		new File(pathIn + "\\ExtractOutput").mkdir();
 		String pathOut =  pathIn + "\\ExtractOutput";
-		File outFile = new File(pathOut);
-		boolean success = outFile.mkdir();
-		if (success == false) {
-			outFile.delete();
-			outFile.mkdir();
-		}
 		
 		System.out.print("Type the directory of the media files: ");
 		String media = sc.nextLine();
@@ -70,7 +65,7 @@ public class Program {
 							if (fi.exists()) {
 								fi.renameTo(new File(currentOut));
 								StringBuilder strings = new StringBuilder();
-								strings.append(fi.getName() + " is " + currentName + i + ".wav");
+								strings.append(currentName + i + " => " + fi.getName());
 								bw.write(strings.toString());
 								bw.newLine();
 								k++;
@@ -84,15 +79,17 @@ public class Program {
 					line = br.readLine();
 				}
 			}
-			
+			bw.write("Transfered files: " + k);
+			bw.newLine();
+			bw.write("Files not found: " + j);
 			bw.close();
 			br.close();
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
-		System.out.println("Arquivos transferidos: " + k);
-		System.out.println("Aquivos não encontrados: " + j);
-		System.out.println("Programa encerrado.");
+		System.out.println("Transfered files: " + k);
+		System.out.println("Files not found: " + j);
+		System.out.println("Program end.");
 		sc.close();
 	}
 
