@@ -1,8 +1,10 @@
 package Application;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,19 +16,20 @@ public class Program {
 
 		Scanner sc = new Scanner(System.in);
 
-		System.out.print("Digite o caminho da pasta contendo os jsons: ");
+		System.out.print("Type the directory of the json files: ");
 		String pathIn = sc.nextLine();
-		boolean success = new File(pathIn + "\\ExtractOutput").mkdir();
-		System.out.print("Digite o caminho da pasta contendo as midias: ");
-		String media = sc.nextLine();
-		String pathOut = null;
-
-		if (success == true) {
-			pathOut = pathIn + "\\ExtractOutput";
-		} else {
-			System.out.println("Digite o caminha da pasta de saida: ");
-			pathOut = sc.nextLine();
+		
+		String pathOut =  pathIn + "\\ExtractOutput";
+		File outFile = new File(pathOut);
+		boolean success = outFile.mkdir();
+		if (success == false) {
+			outFile.delete();
+			outFile.mkdir();
 		}
+		
+		System.out.print("Type the directory of the media files: ");
+		String media = sc.nextLine();
+		
 
 		File path = new File(pathIn);
 		File[] files = path.listFiles(File::isFile);
@@ -34,6 +37,8 @@ public class Program {
 
 		try {
 			BufferedReader br = null;
+			BufferedWriter bw = new BufferedWriter(new FileWriter(pathOut + "\\log.txt", true));
+			
 			String currentPath, line, currentName, currentOut;
 			for (File f : files) {
 
@@ -42,19 +47,19 @@ public class Program {
 				int pos = currentName.lastIndexOf(".");
 				currentName = currentName.substring(0, pos);
 				br = new BufferedReader(new FileReader(currentPath));
-
+				
 				int i = 1;
 
 				List<File> listFiles = new ArrayList<>();
 				listFiles.clear();
-
+				File audioFile = null;
 				line = br.readLine();
 				while (line != null) {
 
 					if (line.contains("AssetPathName")) {
 						line = findString(line);
 
-						File audioFile = new File(media + "\\" + line + ".wav");
+						audioFile = new File(media + "\\" + line + ".wav");
 
 						listFiles.add(audioFile);
 					}
@@ -64,6 +69,10 @@ public class Program {
 							currentOut = pathOut + "\\" + currentName + i + ".wav";
 							if (fi.exists()) {
 								fi.renameTo(new File(currentOut));
+								StringBuilder strings = new StringBuilder();
+								strings.append(fi.getName() + " is " + currentName + i + ".wav");
+								bw.write(strings.toString());
+								bw.newLine();
 								k++;
 								i++;
 							} else
@@ -75,7 +84,9 @@ public class Program {
 					line = br.readLine();
 				}
 			}
-
+			
+			bw.close();
+			br.close();
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
