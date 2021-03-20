@@ -10,5 +10,5 @@
 
 OR
 
-1. Download latest Export.jar
+1. Download latest Export.exe
 2. Run it.
